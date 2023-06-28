@@ -232,8 +232,9 @@ class Buy_Trades extends CI_Controller
             );
             echo json_encode($response);
             return;
-        }
-        
+        } 
+
+
         if ($order_ask_Price <= $lowerCircuit) {
             $response = array(
                 'success' => false,
