@@ -1,0 +1,946 @@
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<!DOCTYPE html>
+  <meta charset="utf-8" />
+  <title>NimbleWebStream Test</title>
+  <body onload="init()">
+  <div id="output" style="padding: 10px; background-color: #f5f5f5;"></div>
+
+  <script language="javascript" type="text/javascript">
+
+   //GFDL TODO - please enter below the endpoint received from GFDL team. If you dont have one, please contact us on sales@globaldatafeeds.in 
+  //   var wsUri = "ws://globaldatafeeds.in:8080";
+  var wsUri = "ws://endpoint:port";
+  //GFDL TODO - please enter below the API Key received from GFDL team. If you dont have one, please contact us on sales@globaldatafeeds.in 
+    var password = "Enter API Access Key";
+  
+  var output;
+  var isAuthenticate = false;
+
+  function init()
+  {
+    output = document.getElementById("output");
+    testWebSocket();
+  }
+
+  function testWebSocket()
+  {
+    websocket = new WebSocket(wsUri);
+    websocket.onopen = function(evt) { onOpen(evt) };
+    websocket.onclose = function(evt) { onClose(evt) };
+    websocket.onmessage = function(evt) { onMessage(evt) };
+    websocket.onerror = function(evt) { onError(evt) };
+  }
+
+  function onOpen(evt)
+  {
+    writeToScreen("CONNECTED");
+	writeToScreen("Endpoint :"+wsUri);
+    Authenticate();  
+  }
+
+  function onClose(evt)
+  {
+	writeToScreen("DISCONNECTED. Reason :"+evt.reason);
+	writeToScreen("DISCONNECTED. Reason :"+evt.code);
+	writeToScreen("Endpoint :"+wsUri);
+  }
+
+  function onMessage(evt)
+  {
+    var event = JSON.parse(evt.data);
+    if (event.MessageType == "AuthenticateResult")
+        if (event.Complete)
+        {
+            isAuthenticate = true;
+			writeToScreen('<span style="color: blue;"> Time : ' + new Date( Date.now()) + '<br>RESPONSE: AUTHENTICATED!!!</span>');	            
+            setTimeout(doTest, 500);
+        }
+		
+	//GFDL : Server sends Echo message every few seconds to confirm connection is live. To hide Echo Message, uncomment "if" statement below
+	//if(event.MessageType != "Echo")
+		writeToScreen('<span style="color: blue;"> Time : ' + new Date( Date.now()) + '<br>RESPONSE: ' + evt.data+'</span>');	
+  }
+
+  function onError(evt)
+  {
+	writeToScreen('<span style="color: red;"> Time : ' + new Date( Date.now()) + '</span>');	
+    writeToScreen('<span style="color: red;">ERROR data:</span> ' + evt.data);
+    writeToScreen('<span style="color: red;">ERROR message:</span> ' + evt.message);
+    writeToScreen('<span style="color: red;">ERROR reason:</span> ' + evt.reason);
+	writeToScreen("Endpoint :"+wsUri);
+  }
+
+  function doSend(message)
+  {
+    var jsonmessage = JSON.stringify(message);
+    websocket.send(jsonmessage);
+	writeToScreen('Time : ' + new Date( Date.now()) + "<br>SENT: " + jsonmessage);
+  }
+  
+  function doClose()
+  {
+      websocket.close();
+  }
+
+  // GFDL : authentication request is sent by below code
+  function Authenticate()
+  {
+     writeToScreen("Authenticate");
+    var message = 
+    {
+       MessageType: "Authenticate",
+       Password: password
+     };
+    doSend(message);
+  }
+  
+  
+//GFDL TODO : All the functions supported by API are listed below. You can uncomment any function to see the flow of request and response
+function doTest()
+{
+	//SubscribeRealtime();					//GFDL : Subscribes to realtime data (server will push new data whenever available)
+	//SubscribeSnapshot();					//GFDL : Subscribes to minute snapshot data (server will push new data whenever available)
+
+	//GetLastQuote();						//GFDL : Returns LastTradePrice of Single Symbol (detailed)
+	//GetLastQuoteShort();					//GFDL : Returns LastTradePrice of Single Symbol (short)
+	//GetLastQuoteShortWithClose();			//GFDL : Returns LastTradePrice of Single Symbol (short) with Close of Previous Day
+	//GetLastQuoteArray();					//GFDL : Returns LastTradePrice of multiple Symbols – max 25 in single call (detailed)
+	//GetLastQuoteArrayShort();				//GFDL : Returns LastTradePrice of multiple Symbols – max 25 in single call (short)
+	//GetLastQuoteArrayShortWithClose();	//GFDL : Returns LastTradePrice of multiple Symbols – max 25 in single call (short) with Previous Close
+
+	//GetSnapshot();						//GFDL : Returns latest Snapshot Data of multiple Symbols – max 25 in single call
+	//GetHistory();							//GFDL : Returns historical data (Tick / Minute / EOD)
+
+	//GetExchanges();						//GFDL : Returns array of available exchanges configured for API Key
+
+	//GetInstrumentsOnSearch();				//GFDL : Returns array of max. 20 instruments by selected exchange and 'search string'
+	//GetInstruments();						//GFDL : Returns array of instruments by selected exchange 
+
+	//GetInstrumentTypes();					//GFDL : Returns list of Instrument Types (e.g. FUTIDX, FUTSTK, etc.)
+	//GetProducts();						//GFDL : Returns list of Products (e.g. NIFTY, BANKNIFTY, GAIL, etc.)
+	//GetExpiryDates();						//GFDL : Returns array of Expiry Dates (e.g. 25JUN2020, 30JUL2020, etc.)
+	//GetOptionTypes();						//GFDL : Returns list of Option Types (e.g. CE, PE, etc.)
+	//GetStrikePrices();					//GFDL : Returns list of Strike Prices (e.g. 10000, 11000, 75.5, etc.)
+
+	//GetServerInfo();						//GFDL : Returns the server endpoint where user is connected
+	//GetLimitation();						//GFDL : Returns user account information (functions allowed, Exchanges allowed, symbol limit, etc.)
+
+	//GetMarketMessages();					//GFDL : Returns array of last messages (Market Messages) related to selected exchange
+	//GetExchangeMessages();				//GFDL : Returns array of last messages (Exchange Messages) related to selected exchange
+
+	//GetLastQuoteOptionChain();			//GFDL : Returns OptionChain data in realtime
+	//GetExchangeSnapshot();				//GFDL : Returns entire Exchange Snapshot in realtime
+	// GetLastQuoteOptionGreeks();
+	// GetLastQuoteArrayOptionGreeks();
+	  GetLastQuoteOptionGreeksChain();
+	
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/* 	GFDL : 	1. 	SubscribeRealtime : pushes realtime data every second for the subscribed instrument from server
+				2. 	So you will need to send this request only once and subscribe for the data.	
+				3.	Please note that if there is internet disconnection for any reason, you will need to 
+					subscribe to all the instruments again - to receive the data.
+				4.	To see this function in action, you should run it during market hours
+				5.	If you want to subscribe to data of multiple symbols, you will need to send 1 request each - for each symbol
+				6. 	Please see symbol naming conventions here : https://globaldatafeeds.in/global-datafeeds-apis/global-datafeeds-apis/documentation-support/symbol-naming-convention/
+	*/
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function SubscribeRealtime()
+{
+	//Below request will subscribe to realtime data of Current Month Futures of NIFTY	
+	//This example shows how to request data using Continuous Format
+	//Similarly, you can send NIFTY-II (Near month), NIFTY-III (Far month). 
+	//Below Symbol is Continuous Format of NIFTY Futures. It will never expire. So no change in code will be necessary.
+	//You can use same naming convention for Futures of Instruments from NFO, CDS, MCX Exchanges
+	//CDS Examples : USDINR-I, USDINR-II, USDINR-III
+	//MCX Examples : NATURALGAS-I, NATURALGAS-II, NATURALGAS-III
+	
+	// Please see symbol naming conventions here : 
+	// https://globaldatafeeds.in/global-datafeeds-apis/global-datafeeds-apis/documentation-support/symbol-naming-convention/
+	
+     var request1 = 	 
+		{
+			MessageType: "SubscribeRealtime",
+			Exchange: "NFO",					//GFDL : Supported values : NSE (stocks), NSE_IDX (Indices), NFO (F&O), MCX & CDS (Currency)
+			InstrumentIdentifier: "NIFTY-I"		//GFDL : NIFTY-I always represents current month Futures. 
+		};
+     doSend(request1);
+
+	//Below request will subscribe to realtime data of NIFTY Futures Contract Expiring on 30JUL2020
+	//This example shows how to request data using Long Format
+	//Similarly, you can send FUTIDX_NIFTY_27AUG2020_XX_0 (near month), FUTIDX_NIFTY_24SEP2020_XX_0 (far month). 
+	//You can use same naming convention for Futures of Instruments from NFO, CDS, MCX Exchanges
+	//NFO Options Examples : OPTIDX_NIFTY_02JUL2020_CE_10000, OPTSTK_RELIANCE_30JUL2020_CE_1700
+	//CDS Futures Examples : FUTCUR_USDINR_26JUN2020_XX_0, FUTCUR_USDINR_29JUL2020_XX_0, FUTCUR_USDINR_27AUG2020_XX_0
+	//CDS Options Examples : OPTCUR_USDINR_29JUL2020_CE_75.5, OPTCUR_EURINR_29JUL2020_CE_80
+	//MCX Futures Examples : FUTCOM_CRUDEOIL_20JUL2020__0, FUTCOM_CRUDEOIL_19AUG2020__0, FUTCOM_CRUDEOIL_21SEP2020__0
+	//MCX Options Examples : OPTFUT_CRUDEOIL_16JUL2020_PE_2050, OPTFUT_GOLD_27JUL2020_PE_43700
+	
+	//Replace it with appropriate expiry date if this contract is expired
+	// Please see symbol naming conventions here : 
+	// https://globaldatafeeds.in/global-datafeeds-apis/global-datafeeds-apis/documentation-support/symbol-naming-convention/
+
+     var request2 = 	 
+		{
+			MessageType: "SubscribeRealtime",
+			Exchange: "NFO",						//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+			InstrumentIdentifier: "FUTIDX_NIFTY_30JUL2020_XX_0"		//GFDL : This is long format symbol of Nifty Futures for Jul 2020 Futures
+		};
+     doSend(request2);
+
+
+	//Below request will subscribe to realtime data of NIFTY Futures Contract Expiring on 30JUL2020
+	//This example shows how to request data using Contractwise Format
+	//Similarly, you can send NIFTY20AUGFUT (near month), NIFTY20SEPFUT (far month). 
+	//You can use same naming convention for Futures of Instruments from NFO, CDS, MCX Exchanges
+	//NFO Options Examples : NIFTY02JUL2010000CE, RELIANCE30JUL201700CE
+	//CDS Futures Examples : USDINR20JULFUT, USDINR20AUGFUT, USDINR20SEPFUT
+	//CDS Options Examples : USDINR29JUL2075.5CE, EURINR29JUL2080CE
+	//MCX Options Examples : CRUDEOIL20JULFUT, CRUDEOIL20AUGFUT, CRUDEOIL20SEPFUT
+	//MCX Options Examples : CRUDEOIL20JUL2050PE, GOLD20JUL43700PE
+	
+	//Replace it with appropriate expiry date if this contract is expired
+	// Please see symbol naming conventions here : 
+	// https://globaldatafeeds.in/global-datafeeds-apis/global-datafeeds-apis/documentation-support/symbol-naming-convention/
+
+     var request3 = 
+		{
+			MessageType: "SubscribeRealtime",
+			Exchange: "NFO",						//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+			InstrumentIdentifier: "NIFTY20JULFUT"	//GFDL : You can specify Contractwise Symbol like this for Futures of NFO, CDS, MCX
+		};
+     doSend(request3);
+
+
+	//Below request will subscribe to realtime data of "NIFTY 50" Index
+	//Other Index Examples are "NIFTY BANK", "NIFTY 100" 
+     var request4 = 
+		{
+			MessageType: "SubscribeRealtime",
+			Exchange: "NSE_IDX",				//GFDL : Supported values : NSE (stocks), NSE_IDX (Indices), NFO (F&O), MCX & CDS (Currency)
+			InstrumentIdentifier: "NIFTY 50"	//GFDL : Please note, there is a the single white space between NIFTY & 50
+		};
+     doSend(request4);
+
+	//Below request will subscribe to realtime data of "BAJAJ-AUTO" NSE Stock from EQ Series
+	//Other Examples are RELIANCE, AXISBANK, LT, etc..
+	//To subscribe to realtime data of any other series, append the series name to symbol name 
+	//for example, to request data of RELIANCE CAPITAL from BE Series, use RELCAPITAL.BE
+	//EQ Series Symbols are mentioned without any suffix
+	
+     var request5 = 
+		{
+			MessageType: "SubscribeRealtime",
+			Exchange: "NSE",					//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+			InstrumentIdentifier: "BAJAJ-AUTO"	//GFDL : Special Character should be mentioned "as they are" without any additional encoding
+		};
+     doSend(request5);
+	 
+     var request6 = 	 
+		{
+			MessageType: "SubscribeRealtime",
+			Exchange: "CDS",					//GFDL : Supported values : NSE (stocks), NSE_IDX (Indices), NFO (F&O), MCX & CDS (Currency)
+			InstrumentIdentifier: "USDINR-I"		//GFDL : USDINR-I always represents current month Futures. 
+		};
+     doSend(request6);
+
+     var request7 = 	 
+		{
+			MessageType: "SubscribeRealtime",
+			Exchange: "MCX",							//GFDL : Supported values : NSE (stocks), NSE_IDX (Indices), NFO (F&O), MCX & CDS (Currency)
+			InstrumentIdentifier: "NATURALGAS-I"		//GFDL : NATURALGAS-I always represents current month Futures. 
+		};
+     doSend(request7);
+	 
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/* 	GFDL : 	1. 	SubscribeSnapshot : pushes realtime Snapshots as per "Period" and "Periodicity" mentioned. 
+				2. 	So you will need to send this request only once and subscribe for the data.
+				3.	For example, if Periodicity is "Minute" and "Period" is 1 then server pushes the data of 
+					the instrument whenever 1 minute completes.
+				4.	Please note that if there is internet disconnection for any reason, you will need to 
+					subscribe to all the instruments again - to receive the data.
+				5.	To see this function in action, you should run them during market hours
+				6.	If you want to subscribe to data of multiple symbols, you will need to send 1 request each - for each symbol
+	*/
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function SubscribeSnapshot()
+{
+	//Below request will subscribe to snapshot data of Current Month Futures of NIFTY	
+	//This example shows how to request data using Continuous Format
+	//Similarly, you can send NIFTY-II (Near month), NIFTY-III (Far month). 
+	//Below Symbol is Continuous Format of NIFTY Futures. It will never expire. So no change in code will be necessary.
+	//You can use same naming convention for Futures of Instruments from NFO, CDS, MCX Exchanges
+	//CDS Examples : USDINR-I, USDINR-II, USDINR-III
+	//MCX Examples : NATURALGAS-I, NATURALGAS-II, NATURALGAS-III
+	
+	// Please see symbol naming conventions here : 
+	// https://globaldatafeeds.in/global-datafeeds-apis/global-datafeeds-apis/documentation-support/symbol-naming-convention/
+	
+     var request1 = 	 
+		{
+			MessageType: "SubscribeSnapshot",
+			Periodicity: "Minute",				//GFDL : Supported values are : Minute, Hour
+			Period:1,							//GFDL : Supported values are : 1,2,5,10,15,30 (for Minute Periodicity ONLY)
+			Exchange: "NFO",					//GFDL : Supported values : NSE (stocks), NSE_IDX (Indices), NFO (F&O), MCX & CDS (Currency)
+			InstrumentIdentifier: "NIFTY-I"		//GFDL : NIFTY-I always represents current month Futures. 
+		};
+     doSend(request1);
+
+
+	//Below request will subscribe to snapshot data of NIFTY Futures Contract Expiring on 30JUL2020
+	//This example shows how to request data using Long Format
+	//Similarly, you can send FUTIDX_NIFTY_27AUG2020_XX_0 (near month), FUTIDX_NIFTY_24SEP2020_XX_0 (far month). 
+	//You can use same naming convention for Futures of Instruments from NFO, CDS, MCX Exchanges
+	//NFO Options Examples : OPTIDX_NIFTY_02JUL2020_CE_10000, OPTSTK_RELIANCE_30JUL2020_CE_1700
+	//CDS Futures Examples : FUTCUR_USDINR_26JUN2020_XX_0, FUTCUR_USDINR_29JUL2020_XX_0, FUTCUR_USDINR_27AUG2020_XX_0
+	//CDS Options Examples : OPTCUR_USDINR_29JUL2020_CE_75.5, OPTCUR_EURINR_29JUL2020_CE_80
+	//MCX Futures Examples : FUTCOM_CRUDEOIL_20JUL2020__0, FUTCOM_CRUDEOIL_19AUG2020__0, FUTCOM_CRUDEOIL_21SEP2020__0
+	//MCX Options Examples : OPTFUT_CRUDEOIL_16JUL2020_PE_2050, OPTFUT_GOLD_27JUL2020_PE_43700
+	
+	//Replace it with appropriate expiry date if this contract is expired
+	// Please see symbol naming conventions here : 
+	// https://globaldatafeeds.in/global-datafeeds-apis/global-datafeeds-apis/documentation-support/symbol-naming-convention/
+
+     var request2 = 	 
+		{
+			MessageType: "SubscribeSnapshot",
+			Periodicity: "Minute",				//GFDL : Supported values are : Minute, Hour
+			Period:1,							//GFDL : Supported values are : 1,2,5,10,15,30 (for Minute Periodicity ONLY)
+			Exchange: "NFO",					//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+			InstrumentIdentifier: "FUTIDX_NIFTY_30JUL2020_XX_0"		//GFDL : This is long format symbol of Nifty Futures for Jul 2020 Futures
+		};
+     doSend(request2);
+
+
+	//Below request will subscribe to snapshot data of NIFTY Futures Contract Expiring on 30JUL2020
+	//This example shows how to request data using Contractwise Format
+	//Similarly, you can send NIFTY20AUGFUT (near month), NIFTY20SEPFUT (far month). 
+	//You can use same naming convention for Futures of Instruments from NFO, CDS, MCX Exchanges
+	//NFO Options Examples : NIFTY02JUL2010000CE, RELIANCE30JUL201700CE
+	//CDS Futures Examples : USDINR20JULFUT, USDINR20AUGFUT, USDINR20SEPFUT
+	//CDS Options Examples : USDINR29JUL2075.5CE, EURINR29JUL2080CE
+	//MCX Options Examples : CRUDEOIL20JULFUT, CRUDEOIL20AUGFUT, CRUDEOIL20SEPFUT
+	//MCX Options Examples : CRUDEOIL20JUL2050PE, GOLD20JUL43700PE
+	
+	//Replace it with appropriate expiry date if this contract is expired
+	// Please see symbol naming conventions here : 
+	// https://globaldatafeeds.in/global-datafeeds-apis/global-datafeeds-apis/documentation-support/symbol-naming-convention/
+
+     var request3 = 
+		{
+			MessageType: "SubscribeSnapshot",
+			Periodicity: "Minute",				//GFDL : Supported values are : Minute, Hour
+			Period:1,							//GFDL : Supported values are : 1,2,5,10,15,30 (for Minute Periodicity ONLY)
+			Exchange: "NFO",
+			InstrumentIdentifier: "NIFTY20JULFUT"	//GFDL : You can specify Contractwise Symbol like this for Futures of NFO, CDS, MCX
+		};
+     doSend(request3);
+
+
+	//Below request will subscribe to snapshot data of "NIFTY 50" Index
+	//Other Index Examples are "NIFTY BANK", "NIFTY 100" 
+     var request4 = 
+		{
+			MessageType: "SubscribeSnapshot",
+			Periodicity: "Minute",				//GFDL : Supported values are : Minute, Hour
+			Period:1,							//GFDL : Supported values are : 1,2,5,10,15,30 (for Minute Periodicity ONLY)
+			Exchange: "NSE_IDX",				//GFDL : Supported values : NSE (stocks), NSE_IDX (Indices), NFO (F&O), MCX & CDS (Currency)
+			InstrumentIdentifier: "NIFTY 50"	//GFDL : Please note, there is a the single white space between NIFTY & 50
+		};
+     doSend(request4);
+
+
+	//Below request will subscribe to snapshot data of "BAJAJ-AUTO" NSE Stock from EQ Series
+	//Other Examples are RELIANCE, AXISBANK, LT, etc..
+	//To subscribe to realtime data of any other series, append the series name to symbol name 
+	//for example, to request data of RELIANCE CAPITAL from BE Series, use RELCAPITAL.BE
+	//EQ Series Symbols are mentioned without any suffix
+	
+     var request5 = 
+		{
+			MessageType: "SubscribeSnapshot",
+			Periodicity: "Minute",				//GFDL : Supported values are : Minute, Hour
+			Period:1,							//GFDL : Supported values are : 1,2,5,10,15,30 (for Minute Periodicity ONLY)
+			Exchange: "NSE",					//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+			InstrumentIdentifier: "BAJAJ-AUTO"	//GFDL : Special Character should be mentioned "as they are" without any additional encoding
+		};
+     doSend(request5);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/* 	GFDL : 	1. 	Below 3 functions return the data of SINGLE SYMBOL - whenever requested.
+				2. 	So you will need to send these requests EVERY TIME when you need latest data.
+				3. 	GetLastQuote : returns single record of realtime data of single symbol. Contains many fields in response
+				4. 	GetLastQuoteShort : returns single record of realtime data of single symbol. Contains limited fields in response
+				5. 	GetLastQuoteShortWithClose : returns single record of realtime data of single symbol. Contains limited fields in response
+				6.	If you want to get data of multiple symbols, you will need to send 1 request each - for each symbol
+				
+					To know about symbol naming conventions, see SubscribeRealtime / SubscribeSnapshot functions above
+				
+					Please see symbol naming conventions here : 
+					https://globaldatafeeds.in/global-datafeeds-apis/global-datafeeds-apis/documentation-support/symbol-naming-convention/			
+	*/
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function GetLastQuote()
+{
+     var request = 
+            {
+                MessageType: "GetLastQuote",
+                Exchange: "NFO",							//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+                InstrumentIdentifier: "NIFTY-I",
+				//isShortIdentifier: "true"					//GFDL : When using contractwise symbol like NIFTY20JULFUT, 
+															//this argument must be sent with value "true" 
+            };
+     doSend(request);
+}
+
+function GetLastQuoteShort()
+{
+     var request = 
+            {
+                MessageType: "GetLastQuoteShort",
+                Exchange: "NFO",							//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+                InstrumentIdentifier: "NIFTY-I",
+				//isShortIdentifier: "true"					//GFDL : When using contractwise symbol like NIFTY20JULFUT, 
+															//this argument must be sent with value "true" 
+            };
+     doSend(request);
+}
+
+function GetLastQuoteShortWithClose()
+{
+     var request = 
+            {
+                MessageType: "GetLastQuoteShortWithClose",
+                Exchange: "NFO",							//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+                InstrumentIdentifier: "NIFTY20JULFUT",
+				isShortIdentifier: "true"					//GFDL : When using contractwise symbol like NIFTY20JULFUT, 
+															//this argument must be sent with value "true" 
+            };
+     doSend(request);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/* 	GFDL : 	1. 	Below 3 functions return the data of MULTIPLE SYMBOLS (MAX 25IN SINGLE CALL) - whenever requested.
+				2. 	So you will need to send these requests EVERY TIME when you need latest data.
+				3. 	GetLastQuoteArray : returns array of realtime data of multiple symbols. Contains many fields in response
+				4. 	GetLastQuoteArrayShort : returns array of realtime data of multiple symbols. Contains limited fields in response
+				5. 	GetLastQuoteArrayShortWithClose : returns array of realtime data of multiple symbols. Contains limited fields in response
+				6.	If you want to get data of multiple symbols (more than 25), you will need to send more requests - 1 each for 25 symbols
+
+					To know about symbol naming conventions, see SubscribeRealtime / SubscribeSnapshot functions above
+				
+					Please see symbol naming conventions here : 
+					https://globaldatafeeds.in/global-datafeeds-apis/global-datafeeds-apis/documentation-support/symbol-naming-convention/			
+	*/
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function GetLastQuoteArray()
+{
+     var request = 
+            {
+                MessageType: "GetLastQuoteArray",
+                Exchange: "NFO",							//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+                InstrumentIdentifiers: [{Value:"NIFTY-I"}, {Value:"BANKNIFTY-I"}, {Value:"RELIANCE-I"}],
+				//isShortIdentifiers: "true"					//GFDL : When using contractwise symbol like NIFTY20JULFUT, 
+															//this argument must be sent with value "true" 
+				
+            };
+     doSend(request);
+}
+
+
+function GetLastQuoteArrayShort()
+{
+     var request = 
+            {
+                MessageType: "GetLastQuoteArrayShort",
+                Exchange: "NFO",
+                InstrumentIdentifiers: [{Value:"NIFTY20JULFUT"}, {Value:"BANKNIFTY20JULFUT"}, {Value:"RELIANCE20JULFUT"}],
+				isShortIdentifiers: "true"					//GFDL : When using contractwise symbol like NIFTY20JULFUT, 
+															//this argument must be sent with value "true" 
+            };
+     doSend(request);
+}
+
+function GetLastQuoteArrayShortWithClose()
+{
+     var request = 
+            {
+                MessageType: "GetLastQuoteArrayShortWithClose",
+                Exchange: "NFO",					//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+                InstrumentIdentifiers: [{Value:"NIFTY20JULFUT"}, {Value:"BANKNIFTY20JULFUT"}, {Value:"RELIANCE20JULFUT"}],
+				isShortIdentifiers: "true"					//GFDL : When using contractwise symbol like NIFTY20JULFUT, 
+															//this argument must be sent with value "true" 
+            };
+     doSend(request);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/* 	GFDL : 	1. 	GetSnapshot : Returns latest single snapshot of MULTIPLE SYMBOLS (MAX 25 in single call) as per 
+					"Periodicity" & "Period" mentioned
+					For example, if Periodicity is "Minute" and "Period" is 1 then server will return the data of 
+					the requested instrument(s) whenever 1 minute completes.
+				2. 	You will need to send this request EVERY TIME when you need latest data.
+				3.	To see this function in action, you should run it during market hours				
+				
+					To know about symbol naming conventions, see SubscribeRealtime / SubscribeSnapshot functions above
+				
+					Please see symbol naming conventions here : 
+					https://globaldatafeeds.in/global-datafeeds-apis/global-datafeeds-apis/documentation-support/symbol-naming-convention/			
+	*/
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function GetSnapshot()
+{
+
+     var request = 
+            {
+                MessageType: "GetSnapshot",
+                Exchange: "MCX",					//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+                Periodicity: "MINUTE",				//GFDL : Supported Values : Minute, Hour
+                Period: 1,							//GFDL : Supported Values : 1,2,3,5,10,15,20,30
+                InstrumentIdentifiers: [{Value:"CRUDEOIL20JULFUT"}, {Value:"NATURALGAS20JULFUT"}],
+				isShortIdentifiers: "true"					//GFDL : When using contractwise symbol like NIFTY20JULFUT, 
+															//this argument must be sent with value "true" 
+            };
+     doSend(request);
+
+     var request1 = 
+            {
+                MessageType: "GetSnapshot",
+                Exchange: "NFO",					//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+                Periodicity: "MINUTE",				//GFDL : Supported Values : Minute, Hour
+                Period: 1,							//GFDL : Supported Values : 1,2,3,5,10,15,20,30
+                InstrumentIdentifiers: [{Value:"NIFTY-I"}, {Value:"BANKNIFTY-I"}],
+				//isShortIdentifiers: "true"					//GFDL : When using contractwise symbol like NIFTY20JULFUT, 
+															//this argument must be sent with value "true" 
+            };
+     doSend(request1);
+
+
+     var request2 = 
+            {
+                MessageType: "GetSnapshot",
+                Exchange: "NSE",					//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+                Periodicity: "MINUTE",				//GFDL : Supported Values : Minute, Hour
+                Period: 1,							//GFDL : Supported Values : 1,2,3,5,10,15,20,30
+                InstrumentIdentifiers: [{Value:"RELIANCE"}, {Value:"AXISBANK"}, {Value:"LT"}],
+            };
+     doSend(request2);
+
+     var request3 = 
+            {
+                MessageType: "GetSnapshot",
+                Exchange: "NSE_IDX",				//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+                Periodicity: "MINUTE",				//GFDL : Supported Values : Minute, Hour
+                Period: 2,							//GFDL : Supported Values : 1,2,3,5,10,15,20,30
+                InstrumentIdentifiers: [{Value:"NIFTY 50"}, {Value:"NIFTY BANK"}]
+            };
+     doSend(request3);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	/* 	GFDL : 	1. 	GetHistory : Returns historical data of SINGLE SYMBOL as per "Periodicity" & "Period" mentioned
+				2.	This is a very powerful function which supports many optional parameters to download full / incremental data
+
+					To know about symbol naming conventions, see SubscribeRealtime / SubscribeSnapshot functions above
+				
+					Please see symbol naming conventions here : 
+					https://globaldatafeeds.in/global-datafeeds-apis/global-datafeeds-apis/documentation-support/symbol-naming-convention/			
+	*/
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function GetHistory()
+{
+     var request = 
+            {
+                MessageType: "GetHistory",
+				Periodicity: "Minute",				//GFDL : Supported values are : Tick, Minute, Hour, Day, Week, Month
+				Period:1,							//GFDL : Supported values : 1,2,3,4,5,10,12,15,20,30
+				Exchange: "NFO",					//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+                InstrumentIdentifier: "NIFTY-I",
+				//isShortIdentifier: "true"					//GFDL : When using contractwise symbol like NIFTY20JULFUT, 
+															//this argument must be sent with value "true" 
+															
+				//From: 1579232700,							//Start time of the History as per Epoch time (1st January 1970)
+															//Visit https://www.epochconverter.com/ to get formulae to convert human readable 
+															//time to Epoch and vice versa (scroll to end of their home page)
+															
+															//If you need entire possible history, send From value as 0
+															
+				//To: 0,									//End time of the History as per Epoch. To request data till latest moment, 
+															//skip this argument or send time in Future (e.g. current time + 1 hour)
+															
+                Max: 10								//Specify this argument to control the number of records returned.
+													//For example, send Max:10 to request only latest 10 records
+            };
+     doSend(request);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/* 	GFDL : 	1. 	GetExchanges : Returns array of Exchanges allowed for your API Key
+	*/
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function GetExchanges()
+{
+     var request = 
+            {
+                MessageType: "GetExchanges"	
+            };
+     doSend(request);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//GetInstrumentsOnSearch();				//GFDL : Returns array of max. 20 instruments by selected exchange and 'search string'
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function GetInstrumentsOnSearch()
+{
+var request = 
+            {
+                MessageType: "GetInstrumentsOnSearch",
+                Exchange: "NFO",			//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+				Search:"NIFTY",				//GFDL : Search String. Mandatory Parameter
+				//InstrumentType: "FUTIDX",	//GFDL : Optional argument to filter the search by products like FUTIDX, FUTSTK, OPTIDX, OPTSTK, 	
+											//		 FUTCUR, FUTCOM, etc.
+				//Product:"NIFTY",			//GFDL : Optional argument to filter the search by products like NIFTY, RELIANCE, etc.
+				//OptionType:"PE",			//GFDL : Optional argument to filter the search by OptionTypes like CE, PE
+				//Expiry:"30JUL2020",		//GFDL : Optional argument to filter the search by Expiry like 30JUL2020
+				//StrikePrice: 10000, 		//GFDL : Optional argument to filter the search by Strike Price like 10000, 75.5, 1250, etc.
+				//OnlyActive:"TRUE",		//GFDL : Optional argument (default=True) to control returned data. If false, 
+											//		 even expired contracts are returned
+            };
+     doSend(request);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/*
+	//GetInstruments();						//GFDL : Returns array of instruments by selected exchange 
+	
+	//VERY VERY IMPORTANT : Huge data of several MB is returned if GetInstruments is called without any optional arguments (NSE & NFO)
+							It is strongly advised that users build a local symbol cache at their end and refresh with our server		
+							only "on need basis". This will result in faster response time and smoother experience for endusers
+	*/
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function GetInstruments()
+{
+     var request = 
+            {
+                MessageType: "GetInstruments",
+                Exchange: "NFO",			//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+				InstrumentType: "FUTSTK",	//GFDL : Optional argument to filter the search by products like FUTIDX, FUTSTK, OPTIDX, OPTSTK, 	
+											//		 FUTCUR, FUTCOM, etc.
+				//Product:"NIFTY",			//GFDL : Optional argument to filter the search by products like NIFTY, RELIANCE, etc.
+				//OptionType:"PE",			//GFDL : Optional argument to filter the search by OptionTypes like CE, PE
+				//Expiry:"30JUL2020",		//GFDL : Optional argument to filter the search by Expiry like 30JUL2020
+				//StrikePrice: 10000, 		//GFDL : Optional argument to filter the search by Strike Price like 10000, 75.5, 1250, etc.
+				//OnlyActive:"TRUE",		//GFDL : Optional argument (default=True) to control returned data. If false, 
+											//		 If false, even expired contracts are returned
+            };
+     doSend(request);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//GetInstrumentTypes();					//GFDL : Returns list of Instrument Types (e.g. FUTIDX, FUTSTK, etc.)
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function GetInstrumentTypes()
+{
+     var request = 
+            {
+                MessageType: "GetInstrumentTypes",
+                Exchange: "NFO"					//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+            };
+     doSend(request);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//GetProducts();						//GFDL : Returns list of Products (e.g. NIFTY, BANKNIFTY, GAIL, etc.)
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function GetProducts()
+{
+     var request = 
+            {
+                MessageType: "GetProducts",
+                Exchange: "NFO"					//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+            };
+     doSend(request);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//GetExpiryDates();						//GFDL : Returns array of Expiry Dates (e.g. 25JUN2020, 30JUL2020, etc.)
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function GetExpiryDates()
+{
+     var request = 
+            {
+                MessageType: "GetExpiryDates",
+                Exchange: "NFO",				//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+				Product: "NIFTY"				//GFDL : Supported Values : RELIANCE, NIFTY, AXISBANK. Mandatory Parameter
+            };
+     doSend(request);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//GetOptionTypes();			//GFDL : Returns list of Option Types (e.g. CE, PE, etc.)
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function GetOptionTypes()
+{
+     var request = 
+            {
+                MessageType: "GetOptionTypes",
+                Exchange: "NFO"					//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+            };
+     doSend(request);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//GetStrikePrices();		//GFDL : Returns list of Strike Prices (e.g. 10000, 11000, 75.5, etc.)
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function GetStrikePrices()
+{
+     var request = 
+            {
+                MessageType: "GetStrikePrices",
+                Exchange: "NFO"					//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+            };
+     doSend(request);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//GetServerInfo();			//GFDL : Returns the server endpoint where user is connected
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function GetServerInfo()
+{
+     var request = 
+            {
+                MessageType: "GetServerInfo"
+            };
+     doSend(request);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//GetLimitation();			//GFDL : Returns user account information (functions allowed, Exchanges allowed, symbol limit, etc.)
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function GetLimitation()
+{
+     var request = 
+            {
+                MessageType: "GetLimitation"
+            };
+     doSend(request);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//GetMarketMessages();					//GFDL : Returns array of last messages (Market Messages) related to selected exchange
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function GetMarketMessages()
+{
+     var request = 
+            {
+                MessageType: "GetMarketMessages",
+                Exchange: "MCX"					//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+            };
+     doSend(request);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//GetExchangeMessages();				//GFDL : Returns array of last messages (Exchange Messages) related to selected exchange
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function GetExchangeMessages()
+{
+     var request = 
+            {
+                MessageType: "GetExchangeMessages",
+                Exchange: "MCX"					//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+            };
+     doSend(request);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//GetLastQuoteOptionChain();			//GFDL : Returns OptionChain data in realtime
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function GetLastQuoteOptionChain()
+{
+     var request = 
+            {
+                MessageType: "GetLastQuoteOptionChain",
+                Exchange: "NFO",				//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+                Product: "RELIANCE",				//GFDL : Mandatory Parameter. Example, RELIANCE, BANKNIFTY, NIFTY
+				//Expiry: "23JAN2020",			//GFDL : Optional field, in DDMMMYYYY format. If absent, result is sent for all active Expiries
+				//OptionType: "CE",				//GFDL : Optional field, CE or PE. If absent, result is sent for all Option Types
+				//StrikePrice: 10000			//GFDL : Optional field, as a number. If absent, result is sent for all strike prices
+            };
+     doSend(request);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//GetExchangeSnapshot();				//GFDL : Returns entire Exchange Snapshot in realtime
+											// This function can return maximum 5 snapshots in single call. You will need to
+											// use "From" and "To" parameters to control the dataset required
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function GetExchangeSnapshot()
+{
+	var request = 
+				{
+					MessageType: "GetExchangeSnapshot",
+					Exchange: "NFO",			//GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+					Periodicity : "Minute",		//GFDL : Mandatory Parameter. Supported Values : Minute, Hour. Default = Minute
+					Period : 1,					//GFDL : Mandatory Parameter. Supported Values : 1,2,5,10,15,30. Default = 1
+					//InstrumentType: "FUTIDX",	//GFDL : Optional Parameter. FUTIDX, FUTSTK, OPTIDX, OPTSTK, FUTCOM, FUTCUR, etc. 
+												//If not mentioned, results are sent for all instrument types
+					//From: 1567655100,			//GFDL : Epoch value of time in seconds since 1st January 1970. For example, 1567655100 is 
+												//epoch value for Thursday, September 5, 2019 9:15:00 AM in GMT+05:30 timezone. 
+												//Optional field to control snapshot start time.
+					//To: 1567655400,			//GFDL : Epoch value of time in seconds since 1st January 1970. For example, 1567655100 is 
+												//epoch value for Thursday, September 5, 2019 9:15:00 AM in GMT+05:30 timezone. 
+												//Optional field to control snapshot end time.
+					//nonTraded: "true"			//GFDL : true/false. When true, results are sent with data of even non traded instruments. 
+												//When false, data of only traded instruments during that period is sent 
+												//Optional, default value is "false"
+				}
+     doSend(request);	
+}
+
+function GetLastQuoteOptionGreeks()
+{
+		var request =
+			{
+				MessageType: "GetLastQuoteOptionGreeks",
+				Exchange: "NFO",                        //GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+				Token: "52534"                          //GFDL : Number of instrument :     
+				                       
+                                               
+			};
+		doSend(request);
+}
+
+function GetLastQuoteArrayOptionGreeks()
+{
+		var request =
+			{
+				MessageType: "GetLastQuoteArrayOptionGreeks",
+				Exchange: "NFO",                        //GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+				Tokens: [{Value:"39489"},{Value:"39487"}]                          //GFDL : Number of instrument :     
+				                       
+                                               
+			};
+		doSend(request);
+}
+
+function GetLastQuoteOptionGreeksChain()
+{
+		var request =
+			{
+				MessageType: "GetLastQuoteOptionGreeksChain",
+				Exchange: "NFO",                 	 //GFDL : Supported Values : NFO, NSE, NSE_IDX, CDS, MCX. Mandatory Parameter
+				Product: "NIFTY-I",    		 		//GFDL : Mandatory Parameter. Example, RELIANCE, BANKNIFTY, NIFTY
+			//	Expiry: "29JUL2021",    			//GFDL : Optional field, in DDMMMYYYY format. If absent, result is sent for all active Expiries
+			//	OptionType: "CE",    		   	   //GFDL : Optional field, CE or PE. If absent, result is sent for all Option Types
+			//	StrikePrice: 15000    			  //GFDL : Optional field, as a number. If absent, result is sent for all strike prices
+				                       
+                                               
+			};
+		doSend(request);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+  function writeToScreen(message)
+  {
+    var pre = document.createElement("p");
+    pre.style.wordWrap = "break-word";
+    pre.innerHTML = message;
+    output.appendChild(pre);
+  }
+
+  window.addEventListener("load", init, false);
+
+  </script>
+
+  <h2>GFDL - WebSocket Sample (updated 29th June 2020)</h2>
+  <div id="output"></div>

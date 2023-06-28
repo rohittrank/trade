@@ -1,0 +1,752 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+
+}
+
+li {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+.flex {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.align-start {
+    align-items: flex-start;
+}
+
+.container {
+    padding: 50px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.green-text {
+    color: #337619;
+}
+.green-bg {
+    background-color: #337619;
+    color: #fff;
+    padding: 2px 4px;
+    border-radius: 2px;
+    display: inline-block;
+}
+.red-bg {
+    background-color: #832727;
+    color: #fff;
+    padding: 2px 4px;
+    border-radius: 2px;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: #385638;
+    color: #fff;
+    display: inline-block;
+    text-transform: uppercase;
+    font-size: 13px;
+    padding: 10px 30px;
+    outline: none;
+    border-radius: 20px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: .3s;
+}
+
+.btn-secondry {
+    background: #832727;
+    color: #fff;
+    display: inline-block;
+    text-transform: uppercase;
+    font-size: 13px;
+    padding: 10px 30px;
+    outline: none;
+    border-radius: 20px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: .3s;
+}
+
+
+.red-text {
+    color: red;
+}
+
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 999;
+    display: none;
+}
+
+.inner-popup {
+    width: 400px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 10px;
+}
+
+.popup .top-head {
+    text-align: center;
+    background-color: #307a72;
+    padding: 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    color: #fff;
+}
+
+.popup .top-head h4 {
+    font-weight: 500;
+}
+
+.inner-popup form {
+    padding: 20px;
+}
+
+.inner-popup form h3 {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.popup .form-group label {
+    display: block;
+    margin-bottom: 6px;
+}
+
+header {
+    background-color: #307a72;
+    text-align: center;
+    padding: 10px 10px;
+}
+.account-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+header a, header h4 {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 400;
+}
+header h4 {
+    font-size: 16px;
+}
+.trade-section {
+    max-width: 90%;
+    margin: 0 auto;
+    padding: 50px 0;
+}
+
+.filter-section {
+    width: 230px;
+    box-shadow: 0 2px 8px 2px rgb(77 87 120 / 33%);
+    border-radius: 5px;
+    position: sticky;
+    top: 30px;
+}
+
+.filter-section li a {
+    text-decoration: none;
+    color: #7081b9;
+    border-bottom: 1px solid #f3f3f3;
+    display: block;
+    padding: 10px 14px;
+}
+
+.filter-section li a i {
+    font-size: 20px;
+    padding-right: 10px;
+}
+
+.filter-section li.active a {
+    background-color: #c1cbe1;
+    color: #000;
+}
+
+.stocks-section {
+    width: calc(100% - 230px);
+    padding-left: 25px;
+}
+
+.stock-tabs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.stock-tabs button.times {
+    padding: 10px 13px;
+    border: none;
+    outline: none;
+    border-radius: 4px;
+    background: #832727;
+    color: #fff;
+}
+.stock-tabs li {
+    padding: 10px 30px;
+    cursor: pointer;
+    margin-right: 3px;
+    background-color: #d3d3d3;
+    list-style: none;
+    display: inline-block;
+    border-radius: 5px;
+}
+
+.stock-tabs li.active {
+    background: #000;
+    color: #fff;
+}
+
+.stock-tabs .search-field {
+    position: relative;
+}
+
+.stock-tabs .search-field input {
+    background-color: #d3d3d3;
+    margin-right: 0px;
+    padding: 10px 10px 10px 35px;
+    outline: none;
+    border: none;
+    line-height: 1.5;
+    border-radius: 5px;
+}
+
+.stock-tabs .search-field i {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    background-color: #d3d3d3;
+    font-size: 18px;
+}
+
+.mcx-futures table,
+.nse-futures table,
+.all-stocks table {
+    width: 100%;
+    border: 1px solid #d3d3d3;
+    border-collapse: collapse;
+}
+
+.mcx-futures table tr,
+.nse-futures table tr {
+    text-align: left;
+}
+
+.mcx-futures tr td p,
+.nse-futures tr td p {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.mcx-futures tr td span,
+.nse-futures tr td span {
+    font-size: 12px;
+}
+
+.mcx-futures td:not(:nth-child(1)) {
+    text-align: center;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content:first-of-type {
+    display: block;
+}
+
+.all-stocks table {
+    text-align: center;
+}
+
+.all-stocks table tr th {
+    background-color: #103900;
+    color: #fff;
+}
+
+.all-stocks table tr td,
+.all-stocks table tr th,
+.mcx-futures tr td,
+.nse-futures tr td {
+    border-bottom: 1px solid #d3d3d3;
+    padding: 9px 10px;
+}
+
+.all-stocks table tr td p {
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+.all-stocks table tr td p.green-text {
+    font-weight: 500;
+    color: #009b13;
+}
+
+.all-stocks table tr td a {
+    text-decoration: none;
+    font-size: 16px;
+    color: #000;
+}
+
+.pending-stocks,
+.active-stocks {
+    border: 1px solid #d3d3d3;
+}
+
+.pending-stocks td,
+.active-stocks td {
+    padding: 10px;
+    border-bottom: 1px solid #d3d3d3;
+}
+
+.pending-stocks tr:last-of-type td,
+.active-stocks tr:last-of-type td {
+    border: none;
+}
+
+.detail-one p {
+    font-size: 14px;
+    background-color: #103900;
+    padding: 5px 11px;
+    margin-bottom: 10px;
+    color: #fff;
+    display: inline-block;
+    border-radius: 4px;
+}
+
+.detail-one h3,
+.detail-two h3 {
+    font-size: 18px;
+    color: #645a9d;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+.detail-one h5,
+.detail-two h5 {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.detail-one span,
+.detail-two span,
+.detail-one span b,
+.detail-two p,
+.detail-two span {
+    font-size: 14px;
+}
+
+.detail-two p {
+    margin-bottom: 10px;
+}
+
+.closing-buttons {
+    width: 100%;
+    justify-content: space-between;
+}
+
+.closing-buttons .mcx,
+.closing-buttons .equity {
+    width: calc(50% - 4px);
+    margin-right: 2px;
+}
+
+ .closing-buttons  a {
+    width: 100%;
+    border: none;
+    outline: none;
+    background-color: #c13636;
+    color: #fff;
+    cursor: pointer;
+    display: block;
+    text-align: center;
+    padding: 7px;
+}
+
+.my-active-stocks p {
+    background-color: red;
+    color: #fff;
+    padding: 5px;
+}
+
+/* -------------- */
+.pending-stocks table,
+.active-stocks table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.detail-two {
+    text-align: right;
+}
+
+.form-section {
+    width: 100%;
+    height: 100vh;
+    background: #103900;
+    position: relative;
+}
+
+.form-inner {
+    width: 600px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 2px 14px 0 rgb(186 188 197 / 59%);
+    padding: 20px;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.form-inner h3 {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.form-inner p {
+    font-size: 13px;
+    margin: 10px;
+}
+
+.form-inner p a {
+    color: #000;
+    font-weight: 500;
+}
+
+.form-group {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    outline: none;
+    font-size: 14px;
+    border: 1px solid #999595;
+    line-height: 1.6;
+}
+
+.submit-btn input {
+    background: #385638;
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 13px;
+    padding: 10px 30px;
+    border: none;
+    outline: none;
+    border-radius: 20px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    margin-bottom: 15px;
+}
+
+.ledger-status {
+    background-color: #103900;
+    color: #fff;
+}
+
+.ledger-status td {
+    font-size: 14px;
+}
+
+.ledger-status td p {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 5px 0;
+}
+
+.profile-row {
+    margin-bottom: 20px;
+}
+
+.profile-row .heading {
+    padding: 4px 10px;
+    background: #a2e5df;
+    margin-bottom: 9px;
+    border: 1px solid #dedede;
+}
+
+.profile-row .heading h3 {
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.inner-cards {
+    width: calc(25% - 16px);
+    box-shadow: 0 2px 6px 0 rgba(173, 175, 182, .5);
+    padding: 20px 30px;
+    margin-right: 20px;
+    border-radius: 6px;
+    text-align: center;
+    background-color: #c1cbe1;
+    margin-bottom: 20px;
+}
+
+.profile-section .inner-cards:nth-child(3n),
+.inner-cards:nth-child(4n) {
+    margin-right: 0;
+}
+
+.profile-row .inner-cards {
+    width: calc(33.33% - 14px);
+}
+
+.inner-cards h4 {
+    font-size: 16px;
+    padding-bottom: 10px;
+    font-weight: 500;
+}
+
+.inner-cards p {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.inside-details h4 {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.inside-details p {
+    margin-bottom: 5px;
+    font-size: 12px;
+}
+
+.inside-details p.green-text {
+    font-weight: 600;
+}
+
+.close-trade {
+    background-color: #b96f6f;
+    padding: 6px 10px;
+    color: #fff;
+    font-size: 12px;
+    border-radius: 9px;
+    display: inline-block;
+}
+
+.mcx-futures td:not(:nth-child(1)) .inside-details {
+    text-align: right;
+}
+
+.manage-fund ul {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+}
+
+.manage-fund ul li {
+    margin-left: 10px;
+}
+.market_btns{
+    padding: 0;
+}
+.market_btns button {
+    width: 49%;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 10px;
+    color: #fff;
+}
+.market_btns .red_bg{
+    background-color: #832727;
+}
+.market_btns .green_bg{
+    background-color: #103900;
+}
+.show-pass{
+    position: relative;
+}
+.show-pass span.eye-btn {
+    position: absolute;
+    top: 11px;
+    right: 11px;
+}
+.show-pass .show i::before{
+    content: "\f070";
+}
+
+@media(max-width: 991px){
+    .trade-section{
+        max-width: 100%;
+        padding-left: 15px;
+        padding-right: 15px;
+    }   
+    .filter-section {
+        width: 160px;
+    }
+    .filter-section li a {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+    .filter-section li a i {
+        font-size: 16px;
+    }
+    .stocks-section {
+        width: calc(100% - 160px);
+    }
+    .all-stocks table tr td a, .all-stocks table tr td, .all-stocks table tr th {
+        font-size: 14px;
+    }
+    .stock-tabs button.times{
+        padding: 8px 12px;
+    }
+    .stock-tabs li {
+        padding: 8px 17px;
+        border-radius: 3px;
+        font-size: 14px;
+    }
+    .stock-tabs .search-field input {
+        padding: 8px 10px 8px 27px;
+        line-height: 1.2;
+        border-radius: 3px;
+        font-size: 14px;
+    }
+    .stock-tabs .search-field i {
+        left: 9px;
+        top: 9px;
+        font-size: 14px;
+    }
+    .detail-one h3, .detail-two h3 {
+        font-size: 16px;
+    }
+    .detail-two p, .detail-one h3, .detail-two h3 {
+        margin-bottom: 5px;
+    }
+    .inner-cards {
+        width: calc(25% - 16px);
+        padding: 10px 15px;
+    }
+    .inside-details h3 {
+        font-size: 15px;
+    }
+    .inside-details h4, .inner-cards h4 {
+        font-size: 14px;
+    }
+    .inner-cards p {
+        font-size: 16px;
+        font-weight: 600;
+    }
+}
+@media(max-width: 767px){
+    header {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        z-index: 99;
+    }
+    .trade-section{
+        padding: 55px 15px 60px 15px;
+    }
+    .filter-section {
+        width: 100%;
+        background-color: #fff;
+        position: fixed;
+        top: auto;
+        left: 0;
+        bottom: 0;
+        z-index: 99;
+        border-radius: unset;
+    }
+    .filter-section ul{
+        display: flex;
+    }
+    .filter-section li {
+        text-align: center;
+        flex: 1;
+    }
+    .filter-section li a {
+        padding: 14px 6px;
+        font-size: 12px;
+    }
+    .filter-section li.active a {
+        border-radius: unset;
+    }
+    .filter-section li a i {
+        font-size: 14px;
+        padding-bottom: 5px;
+        padding-right: 0;
+    }
+    .stocks-section{
+        width: 100%;
+        padding-left: 0;
+    }
+    .all-stocks{
+        overflow-x: auto;
+    }
+    .all-stocks table tr td a, .all-stocks table tr td, .all-stocks table tr th {
+        font-weight: 300;
+    }
+    .stock-tabs{
+        flex-direction: column;
+    }
+    .stock-tabs .search-field{
+        margin-top: 8px;
+    }
+    .stock-tabs .search-field input{
+        width: 100%;
+    }
+    .stock-tabs li {
+        padding: 9px 10px;
+        font-size: 13px;
+    }
+    .inner-cards, .profile-row .inner-cards {
+        width: calc(50% - 5px);
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+    .inner-cards:nth-child(2n), .profile-row .inner-cards:nth-child(2n){
+        margin-right: 0;
+    }
+    .inner-popup {
+        width: 90%;
+    }
+    .mcx-futures tr td p, .nse-futures tr td p {
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
+    .mcx-futures tr td, .nse-futures tr td {
+        font-size: 14px;
+    }
+    .form-inner{
+        width: 90%;
+    }
+}
+@media(max-width: 480px){
+    .filter-section li a i{
+        display: block;
+    }
+    .filter-section li a {
+        padding: 7px 6px;
+        font-size: 12px;
+    }
+    .profile-row{
+        margin-bottom: 0;
+    }
+    .inner-cards{
+        border-radius: 4px;
+    }
+    
+}

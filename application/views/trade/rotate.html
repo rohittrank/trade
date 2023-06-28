@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .rotate-image {
+            width: 200px;
+            height: 200px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <img class="rotate-image" src="path/to/your/image1.jpg" alt="Image 1">
+    <img class="rotate-image" src="path/to/your/image2.jpg" alt="Image 2">
+    <img class="rotate-image" src="path/to/your/image3.jpg" alt="Image 3">
+
+    <script>
+        $(document).ready(function() {
+            var rotation = 0;
+
+            function rotateImages() {
+                rotation += 5; // Adjust the rotation angle as needed
+                $('.rotate-image').css('transform', 'rotate(' + rotation + 'deg)');
+                setTimeout(rotateImages, 50); // Adjust the rotation speed as needed
+            }
+
+            rotateImages();
+        });
+    </script>
+</body>
+</html>
